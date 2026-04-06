@@ -29,9 +29,6 @@
       overflow-x: hidden;
     }
 
-    /* ══════════════════════════════
-       HEADER — BLACK
-    ══════════════════════════════ */
     .header {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -55,7 +52,6 @@
       pointer-events: none;
     }
 
-    /* LEFT */
     .header-left {
       position: relative;
       z-index: 2;
@@ -161,7 +157,6 @@
       stroke-linecap: round;
     }
 
-    /* RIGHT — TICKERS */
     .header-right {
       position: relative;
       z-index: 2;
@@ -180,8 +175,10 @@
       align-items: center;
       padding: 0.32rem 0;
       border-bottom: 1px solid rgba(255,255,255,0.07);
+      transition: opacity 0.3s;
     }
     .tick:last-child { border-bottom: none; }
+    .tick.loading { opacity: 0.4; }
 
     .tick-name {
       font-size: 0.62rem;
@@ -196,7 +193,7 @@
       font-size: 0.68rem;
       font-weight: 500;
       color: rgba(255,255,255,0.75);
-      width: 72px;
+      width: 78px;
       text-align: right;
     }
 
@@ -208,6 +205,7 @@
     }
     .tick-change.up   { color: var(--green); }
     .tick-change.down { color: var(--red); }
+    .tick-change.flat { color: rgba(255,255,255,0.45); }
 
     .ticker-updated {
       font-size: 0.53rem;
@@ -218,9 +216,6 @@
       margin-top: 0.5rem;
     }
 
-    /* ══════════════════════════════
-       MAIN — 3 COLUMNS
-    ══════════════════════════════ */
     .main {
       margin-top: var(--header-h);
       display: grid;
@@ -243,9 +238,7 @@
       margin-bottom: 1.1rem;
     }
 
-    /* ══════════════════════════════
-       COL 1 — NEWS
-    ══════════════════════════════ */
+    /* NEWS */
     .news-list {
       display: flex;
       flex-direction: column;
@@ -281,6 +274,12 @@
       margin-top: 0.28rem;
     }
 
+    .news-loading {
+      font-size: 0.78rem;
+      color: var(--text-3);
+      padding: 1rem 0;
+    }
+
     .refresh-note {
       font-size: 0.54rem;
       color: var(--text-3);
@@ -288,9 +287,7 @@
       margin-top: 0.6rem;
     }
 
-    /* ══════════════════════════════
-       COL 2 — QUICK LINKS
-    ══════════════════════════════ */
+    /* LINKS */
     .links-list { display: flex; flex-direction: column; gap: 0.15rem; }
 
     .link-item {
@@ -314,7 +311,6 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      overflow: hidden;
     }
 
     .link-name { font-size: 0.82rem; font-weight: 500; }
@@ -328,12 +324,17 @@
     }
 
     /* ══════════════════════════════
-       COL 3 — CARDS 2×3
+       CARDS + HOVER PREVIEW
     ══════════════════════════════ */
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 1.2rem;
+    }
+
+    /* wrapper needed for preview positioning */
+    .card-wrap {
+      position: relative;
     }
 
     .card {
@@ -350,11 +351,89 @@
       transition: box-shadow 0.25s ease, transform 0.22s ease;
       animation: fadeUp 0.5s ease both;
       cursor: pointer;
+      width: 100%;
     }
 
     .card:hover {
       box-shadow: 0 10px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06);
       transform: translateY(-3px);
+    }
+
+    /* PREVIEW POPUP */
+    .card-preview {
+      display: none;
+      position: fixed;
+      width: 420px;
+      height: 280px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.1);
+      overflow: hidden;
+      z-index: 200;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(6px) scale(0.98);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .card-preview.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .preview-bar {
+      height: 32px;
+      background: #1d1d1f;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .preview-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+    }
+    .preview-dot.red    { background: #ff5f57; }
+    .preview-dot.yellow { background: #febc2e; }
+    .preview-dot.green  { background: #28c840; }
+
+    .preview-url {
+      flex: 1;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      height: 18px;
+      margin-left: 8px;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+    }
+
+    .preview-url span {
+      font-size: 0.55rem;
+      color: rgba(255,255,255,0.5);
+      font-family: monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .preview-iframe-wrap {
+      width: 100%;
+      height: calc(100% - 32px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preview-iframe-wrap iframe {
+      width: 160%;
+      height: 160%;
+      border: none;
+      transform: scale(0.625);
+      transform-origin: top left;
+      pointer-events: none;
     }
 
     .card-icon {
@@ -400,12 +479,12 @@
       color: var(--accent);
     }
 
-    .card:nth-child(1){animation-delay:0.04s}
-    .card:nth-child(2){animation-delay:0.08s}
-    .card:nth-child(3){animation-delay:0.12s}
-    .card:nth-child(4){animation-delay:0.16s}
-    .card:nth-child(5){animation-delay:0.20s}
-    .card:nth-child(6){animation-delay:0.24s}
+    .card-wrap:nth-child(1) .card { animation-delay: 0.04s; }
+    .card-wrap:nth-child(2) .card { animation-delay: 0.08s; }
+    .card-wrap:nth-child(3) .card { animation-delay: 0.12s; }
+    .card-wrap:nth-child(4) .card { animation-delay: 0.16s; }
+    .card-wrap:nth-child(5) .card { animation-delay: 0.20s; }
+    .card-wrap:nth-child(6) .card { animation-delay: 0.24s; }
 
     @keyframes fadeUp {
       from { opacity:0; transform:translateY(14px); }
@@ -418,7 +497,19 @@
 </head>
 <body>
 
-<!-- ══════ HEADER ══════ -->
+<!-- PREVIEW POPUP (shared, repositioned by JS) -->
+<div class="card-preview" id="card-preview">
+  <div class="preview-bar">
+    <div class="preview-dot red"></div>
+    <div class="preview-dot yellow"></div>
+    <div class="preview-dot green"></div>
+    <div class="preview-url"><span id="preview-url-text"></span></div>
+  </div>
+  <div class="preview-iframe-wrap">
+    <iframe id="preview-iframe" src="" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+</div>
+
 <header class="header">
   <div class="header-left">
     <div class="site-title">Command Center</div>
@@ -430,297 +521,171 @@
       </div>
       <a class="weather-link" href="https://weather.com/weather/today/l/90807" target="_blank">
         <svg viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg>
-        <span id="weather-text">72° · Partly Cloudy · Long Beach, CA</span>
+        <span id="weather-text">Loading weather…</span>
       </a>
       <div class="info-row">
         <svg viewBox="0 0 24 24"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/><path d="M5 12h14"/></svg>
-        <span id="commute-text">28 min to 10700 Valley View St, Cypress</span>
+        <span id="commute-text">Loading commute…</span>
       </div>
     </div>
   </div>
 
   <div class="header-right">
     <div class="tickers-wrap">
-      <div class="tick">
+      <div class="tick loading" id="tick-sp500">
         <span class="tick-name">S&P 500</span>
-        <span class="tick-price" id="sp500-price">5,234.18</span>
-        <span class="tick-change up" id="sp500-chg">▲ +0.82%</span>
+        <span class="tick-price" id="sp500-price">—</span>
+        <span class="tick-change flat" id="sp500-chg">—</span>
       </div>
-      <div class="tick">
+      <div class="tick loading" id="tick-nasdaq">
         <span class="tick-name">NASDAQ</span>
-        <span class="tick-price" id="nasdaq-price">16,388.54</span>
-        <span class="tick-change up" id="nasdaq-chg">▲ +1.14%</span>
+        <span class="tick-price" id="nasdaq-price">—</span>
+        <span class="tick-change flat" id="nasdaq-chg">—</span>
       </div>
-      <div class="tick">
+      <div class="tick loading" id="tick-dow">
         <span class="tick-name">DOW</span>
-        <span class="tick-price" id="dow-price">38,904.67</span>
-        <span class="tick-change down" id="dow-chg">▼ −0.31%</span>
+        <span class="tick-price" id="dow-price">—</span>
+        <span class="tick-change flat" id="dow-chg">—</span>
       </div>
-      <div class="tick">
+      <div class="tick loading" id="tick-app">
         <span class="tick-name">APP</span>
-        <span class="tick-price" id="app-price">$189.42</span>
-        <span class="tick-change up" id="app-chg">▲ +1.23%</span>
+        <span class="tick-price" id="app-price">—</span>
+        <span class="tick-change flat" id="app-chg">—</span>
       </div>
-      <div class="tick">
+      <div class="tick loading" id="tick-pltr">
         <span class="tick-name">PLTR</span>
-        <span class="tick-price" id="pltr-price">$24.87</span>
-        <span class="tick-change down" id="pltr-chg">▼ −0.56%</span>
+        <span class="tick-price" id="pltr-price">—</span>
+        <span class="tick-change flat" id="pltr-chg">—</span>
       </div>
     </div>
-    <div class="ticker-updated" id="ticker-updated">Stocks last updated: —</div>
+    <div class="ticker-updated" id="ticker-updated">Stocks last updated: fetching…</div>
   </div>
 </header>
 
-<!-- ══════ MAIN ══════ -->
 <main class="main">
 
-  <!-- COL 1: NEWS — sorted newest first -->
+  <!-- COL 1: NEWS -->
   <div class="col news-col">
     <div class="col-label">Financial News</div>
     <div class="news-list" id="news-list">
-      <a class="news-item" href="https://finance.yahoo.com" target="_blank">
-        <div class="news-headline">Fed signals potential rate cuts as inflation data cools for third consecutive month</div>
-        <div class="news-source">Reuters · just now</div>
-      </a>
-      <a class="news-item" href="https://finance.yahoo.com" target="_blank">
-        <div class="news-headline">S&P 500 climbs to fresh highs as tech earnings beat expectations across the board</div>
-        <div class="news-source">Bloomberg · 3m ago</div>
-      </a>
-      <a class="news-item" href="https://finance.yahoo.com" target="_blank">
-        <div class="news-headline">Apple unveils new AI chip pushing shares to record territory in early trading</div>
-        <div class="news-source">CNBC · 7m ago</div>
-      </a>
-      <a class="news-item" href="https://finance.yahoo.com" target="_blank">
-        <div class="news-headline">Palantir wins $500M government contract, stock surges in premarket session</div>
-        <div class="news-source">WSJ · 12m ago</div>
-      </a>
-      <a class="news-item" href="https://finance.yahoo.com" target="_blank">
-        <div class="news-headline">Oil prices dip as OPEC signals production increase amid global demand concerns</div>
-        <div class="news-source">Reuters · 19m ago</div>
-      </a>
-      <a class="news-item" href="https://finance.yahoo.com" target="_blank">
-        <div class="news-headline">Treasury yields fall sharply as investors pile into bonds on recession fears</div>
-        <div class="news-source">FT · 27m ago</div>
-      </a>
-      <a class="news-item" href="https://finance.yahoo.com" target="_blank">
-        <div class="news-headline">Retail sales data tops estimates, signaling consumer resilience heading into Q2</div>
-        <div class="news-source">MarketWatch · 34m ago</div>
-      </a>
-      <a class="news-item" href="https://finance.yahoo.com" target="_blank">
-        <div class="news-headline">Dollar weakens against major currencies ahead of key CPI print this week</div>
-        <div class="news-source">Bloomberg · 48m ago</div>
-      </a>
-      <a class="news-item" href="https://finance.yahoo.com" target="_blank">
-        <div class="news-headline">Goldman Sachs raises S&P 500 year-end target citing strong earnings momentum</div>
-        <div class="news-source">Reuters · 1h ago</div>
-      </a>
-      <a class="news-item" href="https://finance.yahoo.com" target="_blank">
-        <div class="news-headline">Bitcoin breaks above $72K as crypto markets rally across the board</div>
-        <div class="news-source">CNBC · 1h 20m ago</div>
-      </a>
-      <a class="news-item" href="https://finance.yahoo.com" target="_blank">
-        <div class="news-headline">Banks report record Q1 profits driven by net interest margins and trading revenues</div>
-        <div class="news-source">WSJ · 2h ago</div>
-      </a>
-      <a class="news-item" href="https://finance.yahoo.com" target="_blank">
-        <div class="news-headline">China manufacturing data misses forecasts, putting pressure on global growth outlook</div>
-        <div class="news-source">FT · 3h ago</div>
-      </a>
+      <div class="news-loading">Loading headlines…</div>
     </div>
-    <div class="refresh-note" id="refresh-note">Updated just now</div>
+    <div class="refresh-note" id="refresh-note">Fetching news…</div>
   </div>
 
   <!-- COL 2: QUICK LINKS -->
   <div class="col links-col">
     <div class="col-label">Quick Links</div>
     <div class="links-list">
-
-      <!-- 1. Twitter/X -->
       <a class="link-item" href="https://x.com" target="_blank">
-        <div class="link-logo">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="#ffffff">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.741l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
-          </svg>
-        </div>
-        <span class="link-name">Twitter / X</span>
-        <span class="link-arrow">↗</span>
+        <div class="link-logo"><svg width="17" height="17" viewBox="0 0 24 24" fill="#ffffff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.741l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></div>
+        <span class="link-name">Twitter / X</span><span class="link-arrow">↗</span>
       </a>
-
-      <!-- 2. TradingView Charts -->
       <a class="link-item" href="https://www.tradingview.com/chart/" target="_blank">
-        <div class="link-logo">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="2,20 7,11 12,15 17,7 22,3"/>
-            <polyline points="18,3 22,3 22,7"/>
-          </svg>
-        </div>
-        <span class="link-name">TradingView Charts</span>
-        <span class="link-arrow">↗</span>
+        <div class="link-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,20 7,11 12,15 17,7 22,3"/><polyline points="18,3 22,3 22,7"/></svg></div>
+        <span class="link-name">TradingView Charts</span><span class="link-arrow">↗</span>
       </a>
-
-      <!-- 3. TradingView Economic Calendar -->
       <a class="link-item" href="https://www.tradingview.com/economic-calendar/" target="_blank">
-        <div class="link-logo">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="4" width="18" height="18" rx="2"/>
-            <line x1="16" y1="2" x2="16" y2="6"/>
-            <line x1="8" y1="2" x2="8" y2="6"/>
-            <line x1="3" y1="10" x2="21" y2="10"/>
-            <line x1="8" y1="14" x2="8" y2="14" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="12" y1="14" x2="12" y2="14" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="16" y1="14" x2="16" y2="14" stroke-width="2.5" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <span class="link-name">Economic Calendar</span>
-        <span class="link-arrow">↗</span>
+        <div class="link-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <span class="link-name">Economic Calendar</span><span class="link-arrow">↗</span>
       </a>
-
-      <!-- 4. CNN Pre-Market -->
       <a class="link-item" href="https://www.cnn.com/markets/premarkets" target="_blank">
-        <div class="link-logo">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="2" y1="12" x2="22" y2="12"/>
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-          </svg>
-        </div>
-        <span class="link-name">CNN Pre-Market</span>
-        <span class="link-arrow">↗</span>
+        <div class="link-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <span class="link-name">CNN Pre-Market</span><span class="link-arrow">↗</span>
       </a>
-
-      <!-- 5. Charles Schwab -->
       <a class="link-item" href="https://www.schwab.com/client-center" target="_blank">
-        <div class="link-logo">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-        </div>
-        <span class="link-name">Charles Schwab</span>
-        <span class="link-arrow">↗</span>
+        <div class="link-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <span class="link-name">Charles Schwab</span><span class="link-arrow">↗</span>
       </a>
-
-      <!-- 6. Gmail -->
       <a class="link-item" href="https://mail.google.com" target="_blank">
-        <div class="link-logo">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="4" width="20" height="16" rx="2"/>
-            <polyline points="2,4 12,13 22,4"/>
-          </svg>
-        </div>
-        <span class="link-name">Gmail</span>
-        <span class="link-arrow">↗</span>
+        <div class="link-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg></div>
+        <span class="link-name">Gmail</span><span class="link-arrow">↗</span>
       </a>
-
-      <!-- 7. Claude -->
       <a class="link-item" href="https://claude.ai" target="_blank">
-        <div class="link-logo">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            <line x1="9" y1="10" x2="15" y2="10"/>
-            <line x1="12" y1="7" x2="12" y2="13"/>
-          </svg>
-        </div>
-        <span class="link-name">Claude</span>
-        <span class="link-arrow">↗</span>
+        <div class="link-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="12" y1="7" x2="12" y2="13"/></svg></div>
+        <span class="link-name">Claude</span><span class="link-arrow">↗</span>
       </a>
-
-      <!-- 8. ChatGPT -->
       <a class="link-item" href="https://chat.openai.com" target="_blank">
-        <div class="link-logo">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            <line x1="9" y1="10" x2="15" y2="10"/>
-          </svg>
-        </div>
-        <span class="link-name">ChatGPT</span>
-        <span class="link-arrow">↗</span>
+        <div class="link-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/></svg></div>
+        <span class="link-name">ChatGPT</span><span class="link-arrow">↗</span>
       </a>
-
-      <!-- 9. HealthEquity -->
       <a class="link-item" href="https://my.healthequity.com" target="_blank">
-        <div class="link-logo">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-          </svg>
-        </div>
-        <span class="link-name">HealthEquity</span>
-        <span class="link-arrow">↗</span>
+        <div class="link-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <span class="link-name">HealthEquity</span><span class="link-arrow">↗</span>
       </a>
-
-      <!-- 10. Earnest -->
       <a class="link-item" href="https://www.earnest.com/account/login" target="_blank">
-        <div class="link-logo">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="1" x2="12" y2="23"/>
-            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-          </svg>
-        </div>
-        <span class="link-name">Earnest</span>
-        <span class="link-arrow">↗</span>
+        <div class="link-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <span class="link-name">Earnest</span><span class="link-arrow">↗</span>
       </a>
-
     </div>
   </div>
 
-  <!-- COL 3: CARDS 2×3 -->
+  <!-- COL 3: CARDS -->
   <div class="col cards-col">
     <div class="col-label">My Apps</div>
     <div class="cards-grid">
 
-      <a class="card" href="#" target="_blank">
-        <div class="card-icon">
-          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-        </div>
-        <div class="card-title">Daily To-Do</div>
-        <div class="card-desc">Track your tasks and stay on top of what matters today.</div>
-        <div class="card-tag">Productivity</div>
-      </a>
+      <!-- TO-DO — with preview -->
+      <div class="card-wrap"
+           data-preview-url="https://angelraulalfaro.github.io/todolist/">
+        <a class="card" href="https://angelraulalfaro.github.io/todolist/" target="_blank">
+          <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+          <div class="card-title">Daily To-Do</div>
+          <div class="card-desc">Track your tasks and stay on top of what matters today.</div>
+          <div class="card-tag">Productivity</div>
+        </a>
+      </div>
 
-      <a class="card" href="#" target="_blank">
-        <div class="card-icon">
-          <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        </div>
-        <div class="card-title">Financial Picture</div>
-        <div class="card-desc">Your full money overview — spending, savings, net worth.</div>
-        <div class="card-tag">Finance</div>
-      </a>
+      <!-- FINANCIAL PICTURE — with preview -->
+      <div class="card-wrap"
+           data-preview-url="https://angelraulalfaro.github.io/personal-snapshot/">
+        <a class="card" href="https://angelraulalfaro.github.io/personal-snapshot/" target="_blank">
+          <div class="card-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="card-title">Financial Picture</div>
+          <div class="card-desc">Your full money overview — spending, savings, net worth.</div>
+          <div class="card-tag">Finance</div>
+        </a>
+      </div>
 
-      <a class="card" href="#" target="_blank">
-        <div class="card-icon">
-          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        </div>
-        <div class="card-title">Calendar</div>
-        <div class="card-desc">Upcoming events, deadlines, and appointments at a glance.</div>
-        <div class="card-tag">Schedule</div>
-      </a>
+      <!-- CALENDAR -->
+      <div class="card-wrap">
+        <a class="card" href="#" target="_blank">
+          <div class="card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <div class="card-title">Calendar</div>
+          <div class="card-desc">Upcoming events, deadlines, and appointments at a glance.</div>
+          <div class="card-tag">Schedule</div>
+        </a>
+      </div>
 
-      <a class="card" href="#" target="_blank">
-        <div class="card-icon">
-          <svg viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg>
-        </div>
-        <div class="card-title">News Feed</div>
-        <div class="card-desc">Stay current with curated headlines from top sources.</div>
-        <div class="card-tag">Info</div>
-      </a>
+      <!-- NEWS FEED -->
+      <div class="card-wrap">
+        <a class="card" href="#" target="_blank">
+          <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg></div>
+          <div class="card-title">News Feed</div>
+          <div class="card-desc">Stay current with curated headlines from top sources.</div>
+          <div class="card-tag">Info</div>
+        </a>
+      </div>
 
-      <a class="card" href="#" target="_blank">
-        <div class="card-icon">
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-        </div>
-        <div class="card-title">Placeholder</div>
-        <div class="card-desc">Add your own app, tool, or link here.</div>
-        <div class="card-tag">Custom</div>
-      </a>
+      <!-- PLACEHOLDER 1 -->
+      <div class="card-wrap">
+        <a class="card" href="#" target="_blank">
+          <div class="card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
+          <div class="card-title">Placeholder</div>
+          <div class="card-desc">Add your own app, tool, or link here.</div>
+          <div class="card-tag">Custom</div>
+        </a>
+      </div>
 
-      <a class="card" href="#" target="_blank">
-        <div class="card-icon">
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-        </div>
-        <div class="card-title">Placeholder</div>
-        <div class="card-desc">Add your own app, tool, or link here.</div>
-        <div class="card-tag">Custom</div>
-      </a>
+      <!-- PLACEHOLDER 2 -->
+      <div class="card-wrap">
+        <a class="card" href="#" target="_blank">
+          <div class="card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
+          <div class="card-title">Placeholder</div>
+          <div class="card-desc">Add your own app, tool, or link here.</div>
+          <div class="card-tag">Custom</div>
+        </a>
+      </div>
 
     </div>
   </div>
@@ -728,7 +693,13 @@
 </main>
 
 <script>
-  // Clock & Date
+  const FINNHUB_KEY = 'd799gkpr01qqpmhfup0g';
+  const WEATHER_KEY = 'a23a92c66a4f750a89e787f7ec2b3b6c';
+  const MAPS_KEY    = 'AIzaSyC-pm1c33sp0UPoDsJn4fwruy1RSJyqN14';
+  const ORIGIN      = '3070+Long+Beach+Blvd,+Long+Beach,+CA+90807';
+  const DESTINATION = '10700+Valley+View+St,+Cypress,+CA+90630';
+
+  // ── CLOCK ──
   function updateClock() {
     const now = new Date();
     const h = String(now.getHours()).padStart(2,'0');
@@ -743,24 +714,198 @@
   updateClock();
   setInterval(updateClock, 1000);
 
-  // Stocks last updated
-  function setTickerUpdated() {
-    const now = new Date();
-    const h = String(now.getHours()).padStart(2,'0');
-    const m = String(now.getMinutes()).padStart(2,'0');
+  // ── WEATHER ──
+  function conditionLabel(id, main) {
+    if (id >= 200 && id < 300) return 'Thunderstorms';
+    if (id >= 300 && id < 400) return 'Drizzle';
+    if (id >= 500 && id < 600) return 'Rain';
+    if (id >= 600 && id < 700) return 'Snow';
+    if (id === 800)             return 'Clear';
+    if (id === 801)             return 'Mostly Clear';
+    if (id === 802)             return 'Partly Cloudy';
+    if (id === 803)             return 'Mostly Cloudy';
+    if (id === 804)             return 'Overcast';
+    return main;
+  }
+
+  async function fetchWeather() {
+    try {
+      const res  = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?zip=90807,us&units=imperial&appid=${WEATHER_KEY}`
+      );
+      const data = await res.json();
+      if (data.cod !== 200) throw new Error(data.message);
+      const temp = Math.round(data.main.temp);
+      const cond = conditionLabel(data.weather[0].id, data.weather[0].main);
+      document.getElementById('weather-text').textContent = `${temp}° · ${cond} · Long Beach, CA`;
+    } catch (e) {
+      document.getElementById('weather-text').textContent = 'Weather unavailable';
+    }
+  }
+  fetchWeather();
+  setInterval(fetchWeather, 15 * 60 * 1000);
+
+  // ── COMMUTE ──
+  async function fetchCommute() {
+    try {
+      const url = `https://maps.googleapis.com/maps/api/distancematrix/json` +
+        `?origins=${ORIGIN}&destinations=${DESTINATION}&mode=driving&departure_time=now&key=${MAPS_KEY}`;
+      const res  = await fetch(url);
+      const data = await res.json();
+      const el   = document.getElementById('commute-text');
+      if (data.status === 'OK') {
+        const row = data.rows[0].elements[0];
+        if (row.status === 'OK') {
+          const dur = row.duration_in_traffic ? row.duration_in_traffic.text : row.duration.text;
+          el.textContent = `${dur} to work`;
+        } else { el.textContent = 'Route unavailable'; }
+      } else { el.textContent = '~25 min to work'; }
+    } catch (e) {
+      document.getElementById('commute-text').textContent = '~25 min to work';
+    }
+  }
+  fetchCommute();
+  setInterval(fetchCommute, 10 * 60 * 1000);
+
+  // ── NEWS ──
+  function timeAgo(unixTimestamp) {
+    const diff = Math.floor(Date.now() / 1000) - unixTimestamp;
+    if (diff < 60)    return 'just now';
+    if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return `${Math.floor(diff / 86400)}d ago`;
+  }
+
+  async function fetchNews() {
+    const list = document.getElementById('news-list');
+    const note = document.getElementById('refresh-note');
+    try {
+      const res  = await fetch(
+        `https://finnhub.io/api/v1/news?category=general&token=${FINNHUB_KEY}`
+      );
+      const data = await res.json();
+      if (!Array.isArray(data) || data.length === 0) {
+        list.innerHTML = '<div class="news-loading">No headlines available.</div>';
+        return;
+      }
+      const sorted = data
+        .filter(item => item.headline && item.url)
+        .sort((a, b) => b.datetime - a.datetime)
+        .slice(0, 20);
+      list.innerHTML = sorted.map(item => `
+        <a class="news-item" href="${item.url}" target="_blank" rel="noopener">
+          <div class="news-headline">${item.headline}</div>
+          <div class="news-source">${item.source || 'Finnhub'} · ${timeAgo(item.datetime)}</div>
+        </a>
+      `).join('');
+      const now = new Date();
+      note.textContent = `Updated ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    } catch (e) {
+      list.innerHTML = '<div class="news-loading">Unable to load headlines.</div>';
+      note.textContent = 'News unavailable';
+    }
+  }
+  fetchNews();
+  setInterval(fetchNews, 5 * 60 * 1000);
+
+  // ── STOCKS ──
+  const tickers = [
+    { symbol: '^GSPC', priceEl: 'sp500-price',  chgEl: 'sp500-chg',  rowEl: 'tick-sp500',  isIndex: true  },
+    { symbol: '^IXIC', priceEl: 'nasdaq-price', chgEl: 'nasdaq-chg', rowEl: 'tick-nasdaq', isIndex: true  },
+    { symbol: '^DJI',  priceEl: 'dow-price',    chgEl: 'dow-chg',    rowEl: 'tick-dow',    isIndex: true  },
+    { symbol: 'APP',   priceEl: 'app-price',    chgEl: 'app-chg',    rowEl: 'tick-app',    isIndex: false },
+    { symbol: 'PLTR',  priceEl: 'pltr-price',   chgEl: 'pltr-chg',   rowEl: 'tick-pltr',   isIndex: false },
+  ];
+
+  function fmt(n, d = 2) {
+    return n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+  }
+
+  function updateTick(t, data) {
+    if (!data.c) return;
+    const pct = data.dp;
+    document.getElementById(t.priceEl).textContent =
+      t.isIndex ? fmt(data.c) : '$' + fmt(data.c);
+    const chgEl = document.getElementById(t.chgEl);
+    chgEl.textContent = (pct >= 0 ? '▲ +' : '▼ ') + Math.abs(pct).toFixed(2) + '%';
+    chgEl.className   = 'tick-change ' + (pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat');
+    document.getElementById(t.rowEl).classList.remove('loading');
+  }
+
+  async function fetchTicker(t) {
+    try {
+      const res  = await fetch(
+        `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(t.symbol)}&token=${FINNHUB_KEY}`
+      );
+      const data = await res.json();
+      updateTick(t, data);
+    } catch (e) {}
+  }
+
+  function setUpdatedTime() {
+    const now    = new Date();
+    const h      = String(now.getHours()).padStart(2,'0');
+    const m      = String(now.getMinutes()).padStart(2,'0');
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     document.getElementById('ticker-updated').textContent =
       `Stocks last updated: ${months[now.getMonth()]} ${now.getDate()}, ${h}:${m}`;
   }
-  setTickerUpdated();
 
-  // News refresh note
-  const start = Date.now();
-  setInterval(() => {
-    const mins = Math.floor((Date.now() - start) / 60000);
-    document.getElementById('refresh-note').textContent =
-      mins < 1 ? 'Updated just now' : `Updated ${mins}m ago`;
-  }, 30000);
+  async function fetchAllTickers() {
+    await Promise.all(tickers.map(fetchTicker));
+    setUpdatedTime();
+  }
+  fetchAllTickers();
+  setInterval(fetchAllTickers, 2 * 60 * 1000);
+
+  // ── HOVER PREVIEW ──
+  const preview    = document.getElementById('card-preview');
+  const previewIframe = document.getElementById('preview-iframe');
+  const previewUrl = document.getElementById('preview-url-text');
+  let hideTimeout  = null;
+  let currentUrl   = null;
+
+  document.querySelectorAll('.card-wrap[data-preview-url]').forEach(wrap => {
+    const url = wrap.dataset.previewUrl;
+
+    wrap.addEventListener('mouseenter', (e) => {
+      clearTimeout(hideTimeout);
+
+      // Load iframe only if URL changed
+      if (currentUrl !== url) {
+        previewIframe.src = url;
+        previewUrl.textContent = url.replace('https://', '');
+        currentUrl = url;
+      }
+
+      // Position preview above the card
+      const rect = wrap.getBoundingClientRect();
+      const pw   = 420;
+      const ph   = 280;
+      let left   = rect.left + (rect.width / 2) - (pw / 2);
+      let top    = rect.top - ph - 12;
+
+      // Keep within viewport
+      if (left < 8) left = 8;
+      if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+      if (top < 8) top = rect.bottom + 12; // flip below if not enough room above
+
+      preview.style.left = left + 'px';
+      preview.style.top  = top + 'px';
+      preview.style.display = 'block';
+
+      requestAnimationFrame(() => {
+        preview.classList.add('visible');
+      });
+    });
+
+    wrap.addEventListener('mouseleave', () => {
+      hideTimeout = setTimeout(() => {
+        preview.classList.remove('visible');
+        setTimeout(() => { preview.style.display = 'none'; }, 200);
+      }, 150);
+    });
+  });
 </script>
 
 </body>
