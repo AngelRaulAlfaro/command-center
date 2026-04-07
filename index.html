@@ -818,11 +818,11 @@
 
   // ── STOCKS ──
   const tickers = [
-    { symbol: '^GSPC', priceEl: 'sp500-price',  chgEl: 'sp500-chg',  rowEl: 'tick-sp500',  isIndex: true  },
-    { symbol: '^IXIC', priceEl: 'nasdaq-price', chgEl: 'nasdaq-chg', rowEl: 'tick-nasdaq', isIndex: true  },
-    { symbol: '^DJI',  priceEl: 'dow-price',    chgEl: 'dow-chg',    rowEl: 'tick-dow',    isIndex: true  },
-    { symbol: 'APP',   priceEl: 'app-price',    chgEl: 'app-chg',    rowEl: 'tick-app',    isIndex: false },
-    { symbol: 'PLTR',  priceEl: 'pltr-price',   chgEl: 'pltr-chg',   rowEl: 'tick-pltr',   isIndex: false },
+    { symbol: 'SPY',  priceEl: 'sp500-price',  chgEl: 'sp500-chg',  rowEl: 'tick-sp500',  isIndex: false },
+    { symbol: 'QQQ',  priceEl: 'nasdaq-price', chgEl: 'nasdaq-chg', rowEl: 'tick-nasdaq', isIndex: false },
+    { symbol: 'DIA',  priceEl: 'dow-price',    chgEl: 'dow-chg',    rowEl: 'tick-dow',    isIndex: false },
+    { symbol: 'APP',  priceEl: 'app-price',    chgEl: 'app-chg',    rowEl: 'tick-app',    isIndex: false },
+    { symbol: 'PLTR', priceEl: 'pltr-price',   chgEl: 'pltr-chg',   rowEl: 'tick-pltr',   isIndex: false },
   ];
 
   function fmt(n, d = 2) {
