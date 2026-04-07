@@ -678,11 +678,11 @@
 </main>
 
 <script>
-  const TWELVEDATA_KEY = 'a22bbdf5a8d045bc84f386af73c1e9ed';
-  const WEATHER_KEY    = 'a23a92c66a4f750a89e787f7ec2b3b6c';
-  const MAPS_KEY       = 'AIzaSyC-pm1c33sp0UPoDsJn4fwruy1RSJyqN14';
-  const ORIGIN         = '3070+Long+Beach+Blvd,+Long+Beach,+CA+90807';
-  const DESTINATION    = '10700+Valley+View+St,+Cypress,+CA+90630';
+  // All API calls go through Cloudflare Worker proxy
+  const PROXY       = 'https://command-center-proxy.ralfaro267.workers.dev';
+  const MAPS_KEY    = 'AIzaSyC-pm1c33sp0UPoDsJn4fwruy1RSJyqN14';
+  const ORIGIN      = '3070+Long+Beach+Blvd,+Long+Beach,+CA+90807';
+  const DESTINATION = '10700+Valley+View+St,+Cypress,+CA+90630';
 
   // ── CLOCK ──
   function updateClock() {
@@ -699,7 +699,7 @@
   updateClock();
   setInterval(updateClock, 1000);
 
-  // ── WEATHER ──
+  // ── WEATHER via proxy ──
   function conditionLabel(id, main) {
     if (id >= 200 && id < 300) return 'Thunderstorms';
     if (id >= 300 && id < 400) return 'Drizzle';
@@ -715,9 +715,7 @@
 
   async function fetchWeather() {
     try {
-      const res  = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?zip=90807,us&units=imperial&appid=${WEATHER_KEY}`
-      );
+      const res  = await fetch(`${PROXY}?action=weather`);
       const data = await res.json();
       if (data.cod !== 200) throw new Error(data.message);
       const temp = Math.round(data.main.temp);
@@ -725,16 +723,16 @@
       document.getElementById('weather-text').textContent = `${temp}° · ${cond} · Long Beach, CA`;
     } catch (e) {
       document.getElementById('weather-text').textContent = 'Weather unavailable';
+      console.warn('Weather failed:', e);
     }
   }
   fetchWeather();
   setInterval(fetchWeather, 60 * 60 * 1000);
 
-  // ── COMMUTE ──
+  // ── COMMUTE via Google Maps ──
   async function fetchCommute() {
     try {
-      const url = `https://maps.googleapis.com/maps/api/distancematrix/json` +
-        `?origins=${ORIGIN}&destinations=${DESTINATION}&mode=driving&departure_time=now&key=${MAPS_KEY}`;
+      const url  = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${ORIGIN}&destinations=${DESTINATION}&mode=driving&departure_time=now&key=${MAPS_KEY}`;
       const res  = await fetch(url);
       const data = await res.json();
       const el   = document.getElementById('commute-text');
@@ -752,14 +750,13 @@
   fetchCommute();
   setInterval(fetchCommute, 10 * 60 * 1000);
 
-  // ── NEWS via RSS (Yahoo Finance → rss2json) ──
+  // ── NEWS via proxy ──
   async function fetchNews() {
     const list = document.getElementById('news-list');
     const note = document.getElementById('refresh-note');
     try {
-      const rssUrl = encodeURIComponent('https://feeds.finance.yahoo.com/rss/2.0/headline?s=^GSPC,^IXIC&region=US&lang=en-US');
-      const res    = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}&count=20`);
-      const data   = await res.json();
+      const res  = await fetch(`${PROXY}?action=news`);
+      const data = await res.json();
       if (data.status !== 'ok' || !data.items || data.items.length === 0) {
         list.innerHTML = '<div class="news-loading">No headlines available.</div>';
         return;
@@ -768,29 +765,29 @@
         const pubDate = new Date(item.pubDate);
         const diff    = Math.floor((Date.now() - pubDate) / 60000);
         const ago     = diff < 1 ? 'just now' : diff < 60 ? `${diff}m ago` : diff < 1440 ? `${Math.floor(diff/60)}h ago` : `${Math.floor(diff/1440)}d ago`;
-        return `
-          <a class="news-item" href="${item.link}" target="_blank" rel="noopener">
-            <div class="news-headline">${item.title}</div>
-            <div class="news-source">Yahoo Finance · ${ago}</div>
-          </a>`;
+        return `<a class="news-item" href="${item.link}" target="_blank" rel="noopener">
+          <div class="news-headline">${item.title}</div>
+          <div class="news-source">Yahoo Finance · ${ago}</div>
+        </a>`;
       }).join('');
       const now = new Date();
       note.textContent = `Updated ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
     } catch (e) {
       list.innerHTML = '<div class="news-loading">Unable to load headlines.</div>';
       note.textContent = 'News unavailable';
+      console.warn('News failed:', e);
     }
   }
   fetchNews();
   setInterval(fetchNews, 60 * 60 * 1000);
 
-  // ── STOCKS via Twelve Data ──
+  // ── STOCKS via proxy ──
   const tickers = [
-    { symbol: 'SPY',  label: 'S&P 500', priceEl: 'sp500-price',  chgEl: 'sp500-chg',  rowEl: 'tick-sp500'  },
-    { symbol: 'QQQ',  label: 'NASDAQ',  priceEl: 'nasdaq-price', chgEl: 'nasdaq-chg', rowEl: 'tick-nasdaq' },
-    { symbol: 'DIA',  label: 'DOW',     priceEl: 'dow-price',    chgEl: 'dow-chg',    rowEl: 'tick-dow'    },
-    { symbol: 'APP',  label: 'APP',     priceEl: 'app-price',    chgEl: 'app-chg',    rowEl: 'tick-app'    },
-    { symbol: 'PLTR', label: 'PLTR',    priceEl: 'pltr-price',   chgEl: 'pltr-chg',   rowEl: 'tick-pltr'   },
+    { symbol: 'SPY',  priceEl: 'sp500-price',  chgEl: 'sp500-chg',  rowEl: 'tick-sp500'  },
+    { symbol: 'QQQ',  priceEl: 'nasdaq-price', chgEl: 'nasdaq-chg', rowEl: 'tick-nasdaq' },
+    { symbol: 'DIA',  priceEl: 'dow-price',    chgEl: 'dow-chg',    rowEl: 'tick-dow'    },
+    { symbol: 'APP',  priceEl: 'app-price',    chgEl: 'app-chg',    rowEl: 'tick-app'    },
+    { symbol: 'PLTR', priceEl: 'pltr-price',   chgEl: 'pltr-chg',   rowEl: 'tick-pltr'   },
   ];
 
   function fmt(n) {
@@ -799,36 +796,27 @@
 
   async function fetchAllTickers() {
     try {
-      const symbols = tickers.map(t => t.symbol).join(',');
-      const res  = await fetch(
-        `https://api.twelvedata.com/quote?symbol=${symbols}&apikey=${TWELVEDATA_KEY}`
-      );
+      const res  = await fetch(`${PROXY}?action=stocks`);
       const data = await res.json();
-
       tickers.forEach(t => {
         const q = data[t.symbol];
         if (!q || q.status === 'error') return;
-
         const price = parseFloat(q.close);
         const pct   = parseFloat(q.percent_change);
-
         document.getElementById(t.priceEl).textContent = '$' + fmt(price);
-
         const chgEl = document.getElementById(t.chgEl);
         chgEl.textContent = (pct >= 0 ? '▲ +' : '▼ ') + Math.abs(pct).toFixed(2) + '%';
         chgEl.className   = 'tick-change ' + (pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat');
         document.getElementById(t.rowEl).classList.remove('loading');
       });
-
       const now    = new Date();
       const h      = String(now.getHours()).padStart(2,'0');
       const m      = String(now.getMinutes()).padStart(2,'0');
       const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
       document.getElementById('ticker-updated').textContent =
         `Stocks last updated: ${months[now.getMonth()]} ${now.getDate()}, ${h}:${m}`;
-
     } catch (e) {
-      console.warn('Twelve Data fetch failed:', e);
+      console.warn('Stocks failed:', e);
     }
   }
   fetchAllTickers();
