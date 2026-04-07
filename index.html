@@ -730,10 +730,9 @@
   setInterval(fetchWeather, 60 * 60 * 1000);
 
   // ── COMMUTE via Google Maps ──
-  async function fetchCommute() {
+async function fetchCommute() {
     try {
-      const url  = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${ORIGIN}&destinations=${DESTINATION}&mode=driving&departure_time=now&key=${MAPS_KEY}`;
-      const res  = await fetch(url);
+      const res  = await fetch(`${PROXY}?action=commute`);
       const data = await res.json();
       const el   = document.getElementById('commute-text');
       if (data.status === 'OK') {
