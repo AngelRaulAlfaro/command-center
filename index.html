@@ -238,7 +238,6 @@
       margin-bottom: 1.1rem;
     }
 
-    /* NEWS */
     .news-list {
       display: flex;
       flex-direction: column;
@@ -287,8 +286,15 @@
       margin-top: 0.6rem;
     }
 
-    /* LINKS */
-    .links-list { display: flex; flex-direction: column; gap: 0.15rem; }
+    .links-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      max-height: calc(100vh - var(--header-h) - 5rem);
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .links-list::-webkit-scrollbar { display: none; }
 
     .link-item {
       display: flex;
@@ -323,19 +329,13 @@
       transition: opacity 0.15s;
     }
 
-    /* ══════════════════════════════
-       CARDS + HOVER PREVIEW
-    ══════════════════════════════ */
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 1.2rem;
     }
 
-    /* wrapper needed for preview positioning */
-    .card-wrap {
-      position: relative;
-    }
+    .card-wrap { position: relative; }
 
     .card {
       background: var(--surface);
@@ -359,7 +359,6 @@
       transform: translateY(-3px);
     }
 
-    /* PREVIEW POPUP */
     .card-preview {
       display: none;
       position: fixed;
@@ -392,10 +391,7 @@
       flex-shrink: 0;
     }
 
-    .preview-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-    }
+    .preview-dot { width: 8px; height: 8px; border-radius: 50%; }
     .preview-dot.red    { background: #ff5f57; }
     .preview-dot.yellow { background: #febc2e; }
     .preview-dot.green  { background: #28c840; }
@@ -497,7 +493,6 @@
 </head>
 <body>
 
-<!-- PREVIEW POPUP (shared, repositioned by JS) -->
 <div class="card-preview" id="card-preview">
   <div class="preview-bar">
     <div class="preview-dot red"></div>
@@ -564,7 +559,6 @@
 
 <main class="main">
 
-  <!-- COL 1: NEWS -->
   <div class="col news-col">
     <div class="col-label">Financial News</div>
     <div class="news-list" id="news-list">
@@ -573,7 +567,6 @@
     <div class="refresh-note" id="refresh-note">Fetching news…</div>
   </div>
 
-  <!-- COL 2: QUICK LINKS -->
   <div class="col links-col">
     <div class="col-label">Quick Links</div>
     <div class="links-list">
@@ -628,14 +621,10 @@
     </div>
   </div>
 
-  <!-- COL 3: CARDS -->
   <div class="col cards-col">
     <div class="col-label">My Apps</div>
     <div class="cards-grid">
-
-      <!-- TO-DO — with preview -->
-      <div class="card-wrap"
-           data-preview-url="https://angelraulalfaro.github.io/todolist/">
+      <div class="card-wrap" data-preview-url="https://angelraulalfaro.github.io/todolist/">
         <a class="card" href="https://angelraulalfaro.github.io/todolist/" target="_blank">
           <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
           <div class="card-title">Daily To-Do</div>
@@ -643,10 +632,7 @@
           <div class="card-tag">Productivity</div>
         </a>
       </div>
-
-      <!-- FINANCIAL PICTURE — with preview -->
-      <div class="card-wrap"
-           data-preview-url="https://angelraulalfaro.github.io/personal-snapshot/">
+      <div class="card-wrap" data-preview-url="https://angelraulalfaro.github.io/personal-snapshot/">
         <a class="card" href="https://angelraulalfaro.github.io/personal-snapshot/" target="_blank">
           <div class="card-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
           <div class="card-title">Financial Picture</div>
@@ -654,8 +640,6 @@
           <div class="card-tag">Finance</div>
         </a>
       </div>
-
-      <!-- CALENDAR -->
       <div class="card-wrap">
         <a class="card" href="#" target="_blank">
           <div class="card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
@@ -664,8 +648,6 @@
           <div class="card-tag">Schedule</div>
         </a>
       </div>
-
-      <!-- NEWS FEED -->
       <div class="card-wrap">
         <a class="card" href="#" target="_blank">
           <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg></div>
@@ -674,8 +656,6 @@
           <div class="card-tag">Info</div>
         </a>
       </div>
-
-      <!-- PLACEHOLDER 1 -->
       <div class="card-wrap">
         <a class="card" href="#" target="_blank">
           <div class="card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
@@ -684,8 +664,6 @@
           <div class="card-tag">Custom</div>
         </a>
       </div>
-
-      <!-- PLACEHOLDER 2 -->
       <div class="card-wrap">
         <a class="card" href="#" target="_blank">
           <div class="card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
@@ -694,18 +672,17 @@
           <div class="card-tag">Custom</div>
         </a>
       </div>
-
     </div>
   </div>
 
 </main>
 
 <script>
-  const FINNHUB_KEY = 'd7a88lpr01qn9i7k0q3g';
-  const WEATHER_KEY = 'a23a92c66a4f750a89e787f7ec2b3b6c';
-  const MAPS_KEY    = 'AIzaSyC-pm1c33sp0UPoDsJn4fwruy1RSJyqN14';
-  const ORIGIN      = '3070+Long+Beach+Blvd,+Long+Beach,+CA+90807';
-  const DESTINATION = '10700+Valley+View+St,+Cypress,+CA+90630';
+  const TWELVEDATA_KEY = 'a22bbdf5a8d045bc84f386af73c1e9ed';
+  const WEATHER_KEY    = 'a23a92c66a4f750a89e787f7ec2b3b6c';
+  const MAPS_KEY       = 'AIzaSyC-pm1c33sp0UPoDsJn4fwruy1RSJyqN14';
+  const ORIGIN         = '3070+Long+Beach+Blvd,+Long+Beach,+CA+90807';
+  const DESTINATION    = '10700+Valley+View+St,+Cypress,+CA+90630';
 
   // ── CLOCK ──
   function updateClock() {
@@ -775,37 +752,28 @@
   fetchCommute();
   setInterval(fetchCommute, 10 * 60 * 1000);
 
-  // ── NEWS ──
-  function timeAgo(unixTimestamp) {
-    const diff = Math.floor(Date.now() / 1000) - unixTimestamp;
-    if (diff < 60)    return 'just now';
-    if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-    return `${Math.floor(diff / 86400)}d ago`;
-  }
-
+  // ── NEWS via RSS (Yahoo Finance → rss2json) ──
   async function fetchNews() {
     const list = document.getElementById('news-list');
     const note = document.getElementById('refresh-note');
     try {
-      const res  = await fetch(
-        `https://finnhub.io/api/v1/news?category=general&token=${FINNHUB_KEY}`
-      );
-      const data = await res.json();
-      if (!Array.isArray(data) || data.length === 0) {
+      const rssUrl = encodeURIComponent('https://feeds.finance.yahoo.com/rss/2.0/headline?s=^GSPC,^IXIC&region=US&lang=en-US');
+      const res    = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}&count=20`);
+      const data   = await res.json();
+      if (data.status !== 'ok' || !data.items || data.items.length === 0) {
         list.innerHTML = '<div class="news-loading">No headlines available.</div>';
         return;
       }
-      const sorted = data
-        .filter(item => item.headline && item.url)
-        .sort((a, b) => b.datetime - a.datetime)
-        .slice(0, 20);
-      list.innerHTML = sorted.map(item => `
-        <a class="news-item" href="${item.url}" target="_blank" rel="noopener">
-          <div class="news-headline">${item.headline}</div>
-          <div class="news-source">${item.source || 'Finnhub'} · ${timeAgo(item.datetime)}</div>
-        </a>
-      `).join('');
+      list.innerHTML = data.items.map(item => {
+        const pubDate = new Date(item.pubDate);
+        const diff    = Math.floor((Date.now() - pubDate) / 60000);
+        const ago     = diff < 1 ? 'just now' : diff < 60 ? `${diff}m ago` : diff < 1440 ? `${Math.floor(diff/60)}h ago` : `${Math.floor(diff/1440)}d ago`;
+        return `
+          <a class="news-item" href="${item.link}" target="_blank" rel="noopener">
+            <div class="news-headline">${item.title}</div>
+            <div class="news-source">Yahoo Finance · ${ago}</div>
+          </a>`;
+      }).join('');
       const now = new Date();
       note.textContent = `Updated ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
     } catch (e) {
@@ -816,97 +784,84 @@
   fetchNews();
   setInterval(fetchNews, 60 * 60 * 1000);
 
-  // ── STOCKS ──
+  // ── STOCKS via Twelve Data ──
   const tickers = [
-    { symbol: 'SPY',  priceEl: 'sp500-price',  chgEl: 'sp500-chg',  rowEl: 'tick-sp500',  isIndex: false },
-    { symbol: 'QQQ',  priceEl: 'nasdaq-price', chgEl: 'nasdaq-chg', rowEl: 'tick-nasdaq', isIndex: false },
-    { symbol: 'DIA',  priceEl: 'dow-price',    chgEl: 'dow-chg',    rowEl: 'tick-dow',    isIndex: false },
-    { symbol: 'APP',  priceEl: 'app-price',    chgEl: 'app-chg',    rowEl: 'tick-app',    isIndex: false },
-    { symbol: 'PLTR', priceEl: 'pltr-price',   chgEl: 'pltr-chg',   rowEl: 'tick-pltr',   isIndex: false },
+    { symbol: 'SPY',  label: 'S&P 500', priceEl: 'sp500-price',  chgEl: 'sp500-chg',  rowEl: 'tick-sp500'  },
+    { symbol: 'QQQ',  label: 'NASDAQ',  priceEl: 'nasdaq-price', chgEl: 'nasdaq-chg', rowEl: 'tick-nasdaq' },
+    { symbol: 'DIA',  label: 'DOW',     priceEl: 'dow-price',    chgEl: 'dow-chg',    rowEl: 'tick-dow'    },
+    { symbol: 'APP',  label: 'APP',     priceEl: 'app-price',    chgEl: 'app-chg',    rowEl: 'tick-app'    },
+    { symbol: 'PLTR', label: 'PLTR',    priceEl: 'pltr-price',   chgEl: 'pltr-chg',   rowEl: 'tick-pltr'   },
   ];
 
-  function fmt(n, d = 2) {
-    return n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
-  }
-
-  function updateTick(t, data) {
-    if (!data.c) return;
-    const pct = data.dp;
-    document.getElementById(t.priceEl).textContent =
-      t.isIndex ? fmt(data.c) : '$' + fmt(data.c);
-    const chgEl = document.getElementById(t.chgEl);
-    chgEl.textContent = (pct >= 0 ? '▲ +' : '▼ ') + Math.abs(pct).toFixed(2) + '%';
-    chgEl.className   = 'tick-change ' + (pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat');
-    document.getElementById(t.rowEl).classList.remove('loading');
-  }
-
-  async function fetchTicker(t) {
-    try {
-      const res  = await fetch(
-        `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(t.symbol)}&token=${FINNHUB_KEY}`
-      );
-      const data = await res.json();
-      updateTick(t, data);
-    } catch (e) {}
-  }
-
-  function setUpdatedTime() {
-    const now    = new Date();
-    const h      = String(now.getHours()).padStart(2,'0');
-    const m      = String(now.getMinutes()).padStart(2,'0');
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    document.getElementById('ticker-updated').textContent =
-      `Stocks last updated: ${months[now.getMonth()]} ${now.getDate()}, ${h}:${m}`;
+  function fmt(n) {
+    return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   async function fetchAllTickers() {
-    await Promise.all(tickers.map(fetchTicker));
-    setUpdatedTime();
+    try {
+      const symbols = tickers.map(t => t.symbol).join(',');
+      const res  = await fetch(
+        `https://api.twelvedata.com/quote?symbol=${symbols}&apikey=${TWELVEDATA_KEY}`
+      );
+      const data = await res.json();
+
+      tickers.forEach(t => {
+        const q = data[t.symbol];
+        if (!q || q.status === 'error') return;
+
+        const price = parseFloat(q.close);
+        const pct   = parseFloat(q.percent_change);
+
+        document.getElementById(t.priceEl).textContent = '$' + fmt(price);
+
+        const chgEl = document.getElementById(t.chgEl);
+        chgEl.textContent = (pct >= 0 ? '▲ +' : '▼ ') + Math.abs(pct).toFixed(2) + '%';
+        chgEl.className   = 'tick-change ' + (pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat');
+        document.getElementById(t.rowEl).classList.remove('loading');
+      });
+
+      const now    = new Date();
+      const h      = String(now.getHours()).padStart(2,'0');
+      const m      = String(now.getMinutes()).padStart(2,'0');
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      document.getElementById('ticker-updated').textContent =
+        `Stocks last updated: ${months[now.getMonth()]} ${now.getDate()}, ${h}:${m}`;
+
+    } catch (e) {
+      console.warn('Twelve Data fetch failed:', e);
+    }
   }
   fetchAllTickers();
   setInterval(fetchAllTickers, 5 * 60 * 1000);
 
   // ── HOVER PREVIEW ──
-  const preview    = document.getElementById('card-preview');
+  const preview       = document.getElementById('card-preview');
   const previewIframe = document.getElementById('preview-iframe');
-  const previewUrl = document.getElementById('preview-url-text');
-  let hideTimeout  = null;
-  let currentUrl   = null;
+  const previewUrl    = document.getElementById('preview-url-text');
+  let hideTimeout     = null;
+  let currentUrl      = null;
 
   document.querySelectorAll('.card-wrap[data-preview-url]').forEach(wrap => {
     const url = wrap.dataset.previewUrl;
-
-    wrap.addEventListener('mouseenter', (e) => {
+    wrap.addEventListener('mouseenter', () => {
       clearTimeout(hideTimeout);
-
-      // Load iframe only if URL changed
       if (currentUrl !== url) {
         previewIframe.src = url;
         previewUrl.textContent = url.replace('https://', '');
         currentUrl = url;
       }
-
-      // Position preview above the card
       const rect = wrap.getBoundingClientRect();
-      const pw   = 420;
-      const ph   = 280;
-      let left   = rect.left + (rect.width / 2) - (pw / 2);
-      let top    = rect.top - ph - 12;
-
-      // Keep within viewport
+      const pw = 420, ph = 280;
+      let left = rect.left + (rect.width / 2) - (pw / 2);
+      let top  = rect.top - ph - 12;
       if (left < 8) left = 8;
       if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
-      if (top < 8) top = rect.bottom + 12; // flip below if not enough room above
-
-      preview.style.left = left + 'px';
-      preview.style.top  = top + 'px';
+      if (top < 8) top = rect.bottom + 12;
+      preview.style.left    = left + 'px';
+      preview.style.top     = top + 'px';
       preview.style.display = 'block';
-
-      requestAnimationFrame(() => {
-        preview.classList.add('visible');
-      });
+      requestAnimationFrame(() => preview.classList.add('visible'));
     });
-
     wrap.addEventListener('mouseleave', () => {
       hideTimeout = setTimeout(() => {
         preview.classList.remove('visible');
